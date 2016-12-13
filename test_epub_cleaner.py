@@ -2,6 +2,7 @@ from shutil import rmtree
 import unittest
 import epub_cleaner
 import os.path
+from os import remove
 
 class TestCleanInit(unittest.TestCase):
     def test_simple(self):
@@ -46,5 +47,10 @@ class TestCleanCleanup(unittest.TestCase):
         self.assertFalse(os.path.exists('test/HenryVI'))
         self.assertFalse(os.path.exists('test/clean_HenryVI'))
         self.assertTrue(os.path.exists('test/clean_HenryVI.epub'))
+
+    def tearDown(self):
+        remove('test/clean_HenryVI.epub')
+
+
 if __name__ == '__main__':
     unittest.main()
