@@ -1,7 +1,7 @@
 import os.path
 import zipfile
-from shutil import copytree
-from os import mkdir
+from shutil import copytree, rmtree
+from os import mkdir, walk
 
 class EpubCleaner(object):
     def __init__(self, epub_name):
@@ -18,3 +18,12 @@ class EpubCleaner(object):
         mkdir(self.old_dir_name)
         old_epub_zip.extractall(self.old_dir_name)
         copytree(self.old_dir_name, self.new_dir_name)
+
+    def cleanup(self):
+        new_epub_zip = zipfile.ZipFile(self.new_epub_name, 'w')
+        for root, dirs, files in walk(self.new_dir_name):
+            for fname in files:
+                new_epub_zip.write(os.path.join(root, fname))
+        new_epub_zip.close()
+        rmtree(self.old_dir_name)
+        rmtree(self.new_dir_name)

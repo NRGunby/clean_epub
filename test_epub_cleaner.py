@@ -38,5 +38,13 @@ class TestCleanSetup(unittest.TestCase):
         rmtree('test/HenryVI')
         rmtree('test/clean_HenryVI')
 
+class TestCleanCleanup(unittest.TestCase):
+    def test_simple(self):
+        tmp = epub_cleaner.EpubCleaner('test/HenryVI.epub')
+        tmp.setup()
+        tmp.cleanup()
+        self.assertFalse(os.path.exists('test/HenryVI'))
+        self.assertFalse(os.path.exists('test/clean_HenryVI'))
+        self.assertTrue(os.path.exists('test/clean_HenryVI.epub'))
 if __name__ == '__main__':
     unittest.main()
