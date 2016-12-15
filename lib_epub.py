@@ -1,7 +1,15 @@
 import xml.etree.ElementTree as ET
+from bs4 import BeautifulSoup
 import os.path
 root_xmlns = '{urn:oasis:names:tc:opendocument:xmlns:container}'
 manifest_xmlns = '{http://www.idpf.org/2007/opf}'
+
+
+def get_rightmost_string(element):
+    tmp = element
+    while not tmp.string:
+        tmp = tmp.contents[-1]
+    return tmp.string
 
 def iter_rootfiles(epub_dir_name):
     container_tree = ET.parse(os.path.join(epub_dir_name, 'META-INF', 'container.xml'))
@@ -26,3 +34,30 @@ def iter_manifest(opf_filename):
             href = i.get('href')
             if os.path.splitext(href)[1] in ('.html', '.xhtml'):
                 yield os.path.join(base_dirname, href)
+
+def clean_html(html_txt, headers):
+    soup = BeautifulSoup(html_txt)
+    curr_para = None
+    body = soup.body
+    for each_body_element in body.contents:
+        if each_body_element.name == 'p':
+            each_body_string = get_rightmost_string(each_body_element).strip()
+            if each_body_string.isdigit():
+                each_body_element.decompose() #Bye-bye, scanned page number
+            elif each_body_string in headers:
+                each_body_element.decompose() # Bye-bye, headers
+            elif each_body_string.rstrip()[-1] != '.':
+                if curr_para:
+                    for i in each_body_element.contents:
+                        curr_para.append(i)
+                    each_body_element.decompose()
+                else:
+                    curr_para = each_body_element.extract()
+            else:
+                if curr_para:
+                    curr_para.append(each_body_element.string)
+                    each_body_element.replace_with(curr_para)
+                    curr_para = None
+    if curr_para:
+        body.append(curr_para)
+    return soup.prettify(formatter='html')
