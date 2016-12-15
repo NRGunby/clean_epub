@@ -1,7 +1,9 @@
 import os.path
+import lib_epub
 import zipfile
 from shutil import copytree, rmtree
 from os import mkdir, walk
+
 
 class EpubCleaner(object):
     def __init__(self, epub_name):
@@ -27,3 +29,14 @@ class EpubCleaner(object):
         new_epub_zip.close()
         rmtree(self.old_dir_name)
         rmtree(self.new_dir_name)
+
+    def process(self, headers):
+        self.setup()
+        for each_rootfile in lib_epub.iter_rootfiles(self.new_dir_name):
+            for each_html_file in lib_epub.iter_manifest(each_rootfile):
+                with open(each_html_file) as f:
+                    each_html_txt = f.read()
+                new_html_txt = lib_epub.clean_html(each_html_txt, headers)
+                with open(each_html_file, 'w') as f:
+                    f.write(new_html_txt)
+        self.cleanup()
