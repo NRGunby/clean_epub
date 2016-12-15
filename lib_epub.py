@@ -8,7 +8,10 @@ manifest_xmlns = '{http://www.idpf.org/2007/opf}'
 def get_rightmost_string(element):
     tmp = element
     while not tmp.string:
-        tmp = tmp.contents[-1]
+        try:
+            tmp = tmp.contents[-1]
+        except IndexError:
+            return ' ' # Is this robust? I don't think this is robust
     return tmp.string
 
 def iter_rootfiles(epub_dir_name):
@@ -46,7 +49,7 @@ def clean_html(html_txt, headers):
                 each_body_element.decompose() #Bye-bye, scanned page number
             elif each_body_string in headers:
                 each_body_element.decompose() # Bye-bye, headers
-            elif each_body_string.rstrip()[-1] != '.':
+            elif each_body_string and each_body_string[-1] != '.':
                 if curr_para:
                     for i in each_body_element.contents:
                         curr_para.append(i)
@@ -55,7 +58,8 @@ def clean_html(html_txt, headers):
                     curr_para = each_body_element.extract()
             else:
                 if curr_para:
-                    curr_para.append(each_body_element.string)
+                    for i in each_body_element.contents:
+                        curr_para.append(i)
                     each_body_element.replace_with(curr_para)
                     curr_para = None
     if curr_para:
