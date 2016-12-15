@@ -10,19 +10,18 @@ class base(unittest.TestCase):
         self.epub.setup()
 
     def tearDown(self):
-        rmtree('test/HenryVI')
         rmtree('test/clean_HenryVI')
 
 class TestIterRootfiles(base):
     def test_simple(self):
-        ret = [i for i in lib_epub.iter_rootfiles(self.epub.new_dir_name)]
-        self.assertEqual(ret, [self.epub.new_dir_name + '/content.opf'])
+        ret = [i for i in lib_epub.iter_rootfiles(self.epub.dir_name)]
+        self.assertEqual(ret, [self.epub.dir_name + '/content.opf'])
 
 class TestIterManifest(base):
     def test_simple(self):
-        tmp = [i for i in lib_epub.iter_rootfiles(self.epub.new_dir_name)]
+        tmp = [i for i in lib_epub.iter_rootfiles(self.epub.dir_name)]
         ret = [i for i in lib_epub.iter_manifest(tmp[0])]
-        self.assertEqual(ret[0], self.epub.new_dir_name + '/index_split_000.html')
+        self.assertEqual(ret[0], self.epub.dir_name + '/index_split_000.html')
         self.assertEqual(len(ret), 68)
 
 class TestCleanHTML(unittest.TestCase):
