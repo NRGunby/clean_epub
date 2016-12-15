@@ -58,5 +58,9 @@ class TestCleanHTML(unittest.TestCase):
         after_p = after_soup.find_all('p')
         self.assertEqual(len(after_p), 2)
 
+    def test_nested(self):
+        before_soup, after_soup = self.begin('test/nested_tags.html')
+        self.assertTrue(after_soup.i)
+
 if __name__ == '__main__':
     unittest.main()
