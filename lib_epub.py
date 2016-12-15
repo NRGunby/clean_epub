@@ -51,15 +51,15 @@ def clean_html(html_txt, headers):
                 each_body_element.decompose() # Bye-bye, headers
             elif each_body_string and each_body_string[-1] != '.':
                 if curr_para:
-                    for i in each_body_element.contents:
-                        curr_para.append(i)
+                    while each_body_element.contents:
+                        curr_para.append(each_body_element.contents[0])
                     each_body_element.decompose()
                 else:
                     curr_para = each_body_element.extract()
             else:
                 if curr_para:
-                    for i in each_body_element.contents:
-                        curr_para.append(i)
+                    while each_body_element.contents:
+                        curr_para.append(each_body_element.contents[0])
                     each_body_element.replace_with(curr_para)
                     curr_para = None
     if curr_para:
