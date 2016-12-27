@@ -23,7 +23,9 @@ class EpubCleaner(object):
         new_epub_zip = zipfile.ZipFile(self.new_epub_name, 'w')
         for root, dirs, files in walk(self.dir_name):
             for fname in files:
-                new_epub_zip.write(os.path.join(root, fname))
+                p = os.path.join(root, fname)
+                a = os.path.relpath(p, self.dir_name)
+                new_epub_zip.write(p, arcname=a)
         new_epub_zip.close()
         rmtree(self.dir_name)
 
